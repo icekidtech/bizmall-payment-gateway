@@ -3,10 +3,10 @@
   "projects": [
     {
       "name": "PaymentGateway",
-      "path": "contracts/payment_gateway.tact",
+      "path": "contracts/PaymentGateway.tact",
       "output": "build/PaymentGateway",
       "options": {
-        "debug": false,
+        "debug": true,
         "external": false
       },
       "mode": "full"
