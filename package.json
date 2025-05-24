@@ -1,0 +1,27 @@
+{
+  "name": "bizmall-ton-payment-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Blockchain-based payment gateway for BizMall using TON",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "keywords": [
+    "ton",
+    "blockchain",
+    "payments",
+    "e-commerce"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=7.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "@types/node": "^20.4.2",
+    "ts-node": "^10.9.1"
+  }
+}
