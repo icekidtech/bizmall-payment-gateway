@@ -109,7 +109,7 @@ contract PaymentGateway with Deployable {
         });
         
         // Increment order ID for next transaction
-        self.nextOrderId = self.nextOrderId + 1;
+        self.nextOrderId += 1;
     }
     
     // Confirm order - can only be called by the seller
