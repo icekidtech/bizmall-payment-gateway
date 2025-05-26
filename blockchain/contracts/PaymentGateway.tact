@@ -26,6 +26,8 @@ message OrderRefunded {
     orderId: Int;
 }
 
+// Remove the struct event types - use messages instead
+
 message ProcessPayment {
     orderId: Int;
     sellerType: Int;
@@ -71,12 +73,13 @@ contract PaymentGateway with Deployable {
         require(self.orders.get(msg.orderId) == null, "Order ID already exists");
         
         // Validate seller wallet
-        let workchain = msg.sellerWallet.workChain();
-        let hash = msg.sellerWallet.hash();
-        require(!(workchain == 0 && hash == 0), "Invalid seller wallet address");
+        require(msg.sellerWallet.toString() != "0:0000000000000000000000000000000000000000000000000000000000000000", "Invalid seller wallet address");
         
         // Validate seller type
         require(msg.sellerType == 0 || msg.sellerType == 1, "Invalid seller type");
+        
+        // Determine destination based on seller type
+        let destination: Address = msg.sellerType == 0 ? msg.sellerWallet : self.adminWallet;
         
         // Create new order record
         let order: Order = Order{
@@ -88,11 +91,8 @@ contract PaymentGateway with Deployable {
             timestamp: now()
         };
         
-        // Store order in map
+        // Store the order
         self.orders.set(msg.orderId, order);
-        
-        // Forward payment to the appropriate wallet
-        let destination: Address = msg.sellerType == 0 ? msg.sellerWallet : self.adminWallet;
         
         // Send 95% of the payment to the destination, keeping 5% for gas and contract operations
         let sendAmount: Int = (context().value * 95) / 100;
@@ -108,7 +108,7 @@ contract PaymentGateway with Deployable {
             amount: context().value,
             buyer: context().sender,
             sellerWallet: destination
-        });
+        }.toCell());
         
         // Increment order ID for next transaction
         self.nextOrderId += 1;
@@ -128,9 +128,6 @@ contract PaymentGateway with Deployable {
         // Ensure sender is authorized
         require(context().sender == authorizedWallet, "Not authorized to confirm this order");
         
-        // Ensure order is in pending status
-        require(order!!.status == 0, "Order not in pending status");
-        
         // Update order status to confirmed
         let updatedOrder: Order = Order{
             amount: order!!.amount,
@@ -146,7 +143,7 @@ contract PaymentGateway with Deployable {
         // Emit order confirmed event
         emit(OrderConfirmed{
             orderId: msg.orderId
-        });
+        }.toCell());
     }
     
     // Process refund - can only be called by the seller within 24 hours
@@ -195,7 +192,7 @@ contract PaymentGateway with Deployable {
         // Emit order refunded event
         emit(OrderRefunded{
             orderId: msg.orderId
-        });
+        }.toCell());
     }
     
     // Admin-only function to update admin wallet (upgradeability pattern)
