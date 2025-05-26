@@ -71,7 +71,7 @@ contract PaymentGateway with Deployable {
         require(self.orders.get(msg.orderId) == null, "Order ID already exists");
         
         // Validate seller wallet
-        require(!msg.sellerWallet.isNull(), "Invalid seller wallet address");
+        require(msg.sellerWallet != null, "Invalid seller wallet address");
         
         // Validate seller type
         require(msg.sellerType == 0 || msg.sellerType == 1, "Invalid seller type");

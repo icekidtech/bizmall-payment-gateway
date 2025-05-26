@@ -4,7 +4,7 @@ A blockchain-based payment system integrating with the BizMall e-commerce platfo
 
 ## Overview
 
-This monorepo contains three main components:
+This project contains three main components:
 - **Blockchain**: Smart contracts written in Tact for the TON blockchain
 - **Backend**: Node.js API built with Express and TypeScript
 - **Frontend**: React UI components for the payment checkout experience
@@ -13,7 +13,7 @@ This monorepo contains three main components:
 
 ### Prerequisites
 - Node.js v16 or higher
-- pnpm v7 or higher
+- npm or yarn package manager
 - TON development tools
 
 ### Installation
@@ -26,7 +26,9 @@ This monorepo contains three main components:
 
 2. Install dependencies
     ```bash
-    pnpm install
+    npm install
+    # or with yarn
+    yarn install
     ```
 
 3. Setup environment variables
@@ -38,12 +40,26 @@ This monorepo contains three main components:
 ## Project Structure
 
 ```
-├── packages/
-│   ├── blockchain/    # TON smart contracts
-│   ├── backend/       # Express API server
-│   └── frontend/      # React payment components
+```
+bizmall-ton-payment-gateway/
+├── blockchain/        # TON smart contracts written in Tact
+│   ├── contracts/     # Contract source code (Tact files)
+│   ├── build/         # Compiled contracts
+│   ├── tests/         # Contract test files
+│   ├── scripts/       # Deployment scripts
+│   └── wrappers/      # Contract wrapper classes
+├── server/            # Express API server
+│   ├── src/           # TypeScript source files
+│   ├── dist/          # Compiled JavaScript
+│   └── tests/         # Backend tests
+├── client/            # React payment UI components
+│   ├── src/           # React source code
+│   ├── public/        # Static assets
+│   └── build/         # Production build
 ├── docs/              # Documentation
-└── scripts/           # Utility scripts
+│   └── deployment.md  # Deployment guide
+└── .env.example       # Example environment variables
+```
 ```
 
 ## Development
@@ -51,27 +67,27 @@ This monorepo contains three main components:
 ### Blockchain
 
 ```bash
-cd packages/blockchain
-pnpm build   # Compile smart contracts
-pnpm test    # Run contract tests
-pnpm deploy  # Deploy to testnet
+cd contracts
+npm run build   # Compile smart contracts
+npm run test    # Run contract tests
+npm run deploy  # Deploy to testnet
 ```
 
 ### Backend
 
 ```bash
-cd packages/backend
-pnpm dev     # Start development server
-pnpm build   # Build for production
-pnpm start   # Start production server
+cd server
+npm run dev     # Start development server
+npm run build   # Build for production
+npm run start   # Start production server
 ```
 
 ### Frontend
 
 ```bash
-cd packages/frontend
-pnpm dev     # Start development server
-pnpm build   # Build for production
+cd client
+npm run dev     # Start development server
+npm run build   # Build for production
 ```
 
 ## Configuration
@@ -94,13 +110,17 @@ REACT_APP_API_URL=http://localhost:3000/api
 ## Testing
 
 ```bash
-# Run all tests
-pnpm test
+# Run blockchain tests
+cd contracts
+npm test
 
-# Run specific package tests
-pnpm --filter=@bizmall/blockchain test
-pnpm --filter=@bizmall/backend test
-pnpm --filter=@bizmall/frontend test
+# Run backend tests
+cd server
+npm test
+
+# Run frontend tests
+cd client
+npm test
 ```
 
 ## Deployment
