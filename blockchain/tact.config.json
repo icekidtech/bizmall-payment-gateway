@@ -10,6 +10,16 @@
         "external": false
       },
       "mode": "full"
+    },
+    {
+      "name": "PaymentGateway",
+      "path": "contracts/payment_gateway.tact",
+      "output": "build/PaymentGateway",
+      "options": {
+        "debug": false,
+        "external": false
+      },
+      "mode": "full"
     }
   ]
 }
