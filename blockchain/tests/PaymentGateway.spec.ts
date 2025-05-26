@@ -1,6 +1,7 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
 import { toNano } from '@ton/core';
-import { PaymentGateway, ProcessPayment } from '../build/PaymentGateway/PaymentGateway_PaymentGateway';
+import { PaymentGateway } from '../build/PaymentGateway/PaymentGateway_PaymentGateway';
+import { ProcessPayment } from '../wrappers/ProcessPayment';
 import '@ton/test-utils';
 
 describe('PaymentGateway', () => {
