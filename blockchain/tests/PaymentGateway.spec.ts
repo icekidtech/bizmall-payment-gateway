@@ -10,10 +10,12 @@ describe('PaymentGateway', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-
-        paymentGateway = blockchain.openContract(await PaymentGateway.fromInit());
-
+        
         deployer = await blockchain.treasury('deployer');
+
+        paymentGateway = blockchain.openContract(
+            await PaymentGateway.fromInit() // Initialize without arguments
+        );
 
         const deployResult = await paymentGateway.send(
             deployer.getSender(),
