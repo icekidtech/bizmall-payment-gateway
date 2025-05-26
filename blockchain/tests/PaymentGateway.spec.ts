@@ -43,16 +43,18 @@ describe('PaymentGateway', () => {
         const buyer = await blockchain.treasury('buyer');
         const merchant = await blockchain.treasury('merchant');
         
+        const processPaymentMessage = ProcessPayment.createFromConfig({
+            orderId: 1n,
+            sellerType: 0n, // merchant
+            sellerWallet: merchant.address
+        });
+
         const result = await paymentGateway.send(
             buyer.getSender(),
             {
                 value: toNano('1.1') // More than minimum threshold
             },
-            ProcessPayment.createFromConfig({
-                orderId: 1n,
-                sellerType: 0n, // merchant
-                sellerWallet: merchant.address
-            })
+            null // Pass null instead of the Cell directly
         );
         
         expect(result.transactions).toHaveTransaction({
