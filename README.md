@@ -40,7 +40,6 @@ This project contains three main components:
 ## Project Structure
 
 ```
-```
 bizmall-ton-payment-gateway/
 ├── blockchain/        # TON smart contracts written in Tact
 │   ├── contracts/     # Contract source code (Tact files)
@@ -60,7 +59,7 @@ bizmall-ton-payment-gateway/
 │   └── deployment.md  # Deployment guide
 └── .env.example       # Example environment variables
 ```
-```
+
 
 ## Development
 
