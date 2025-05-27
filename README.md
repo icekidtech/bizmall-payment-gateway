@@ -26,7 +26,7 @@ This project contains three main components:
 
 2. Install dependencies
     ```bash
-    npm install
+    pnpm install
     # or with yarn
     yarn install
     ```
@@ -67,26 +67,26 @@ bizmall-ton-payment-gateway/
 
 ```bash
 cd contracts
-npm run build   # Compile smart contracts
-npm run test    # Run contract tests
-npm run deploy  # Deploy to testnet
+pnpm run build   # Compile smart contracts
+pnpm run test    # Run contract tests
+pnpm run deploy  # Deploy to testnet
 ```
 
 ### Backend
 
 ```bash
 cd server
-npm run dev     # Start development server
-npm run build   # Build for production
-npm run start   # Start production server
+pnpm run dev     # Start development server
+pnpm run build   # Build for production
+pnpm run start   # Start production server
 ```
 
 ### Frontend
 
 ```bash
 cd client
-npm run dev     # Start development server
-npm run build   # Build for production
+pnpm run dev     # Start development server
+pnpm run build   # Build for production
 ```
 
 ## Configuration
@@ -111,15 +111,15 @@ REACT_APP_API_URL=http://localhost:3000/api
 ```bash
 # Run blockchain tests
 cd contracts
-npm test
+pnpm test
 
 # Run backend tests
 cd server
-npm test
+pnpm test
 
 # Run frontend tests
 cd client
-npm test
+pnpm test
 ```
 
 ## Deployment
