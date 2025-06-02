@@ -273,7 +273,7 @@ export class PaymentGateway implements Contract {
         await provider.internal(via, {
             value,
             sendMode: 1,
-            body: beginCell().storeUint(0, 32).storeStringTail("Deploy").endCell(),
+            body: null,
         });
     }
     
