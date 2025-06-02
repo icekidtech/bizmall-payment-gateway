@@ -170,9 +170,9 @@ AGOEvpAgQEB1wD0BIEBAdcAVTBsFJ36QAEB0W2CCA9CQAFw4ts8bEGAEAAIjAV+ymPtRNDSAAGOEvpAg
     // Create a builder with the initialization arguments
     const dataBuilder = beginCell();
     dataBuilder.storeAddress(admin);
-    dataBuilder.storeUint(1000000, 32); // minThreshold
+    dataBuilder.storeUint(1000000, 257); // minThreshold
     dataBuilder.storeDict(Dictionary.empty()); // orders
-    dataBuilder.storeUint(0, 32); // nextOrderId
+    dataBuilder.storeUint(0, 257); // nextOrderId
     const __data = dataBuilder.endCell();
     
     return { code: __code, data: __data };
