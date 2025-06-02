@@ -1,9 +1,10 @@
-import { toNano } from '@ton/core';
+import { toNano, Address } from '@ton/core';
 import { PaymentGateway } from '../build/PaymentGateway/PaymentGateway_PaymentGateway';
 import { NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
-    const paymentGateway = provider.open(await PaymentGateway.fromInit());
+    const adminAddress = provider.sender().address as Address;
+    const paymentGateway = provider.open(await PaymentGateway.fromInit(adminAddress));
 
     await paymentGateway.send(
         provider.sender(),
