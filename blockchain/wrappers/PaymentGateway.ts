@@ -300,12 +300,7 @@ export class PaymentGateway implements Contract {
         await provider.internal(via, {
             value: "0.05",
             sendMode: 1,
-            body: beginCell()
-                .store(storeConfirmOrder({
-                    $$type: 'ConfirmOrder',
-                    orderId: BigInt(orderId),
-                }))
-                .endCell(),
+            body: null,
         });
     }
     
@@ -313,12 +308,7 @@ export class PaymentGateway implements Contract {
         await provider.internal(via, {
             value: "0.05",
             sendMode: 1,
-            body: beginCell()
-                .store(storeProcessRefund({
-                    $$type: 'ProcessRefund',
-                    orderId: BigInt(orderId),
-                }))
-                .endCell(),
+            body: null,
         });
     }
     
@@ -326,12 +316,7 @@ export class PaymentGateway implements Contract {
         await provider.internal(via, {
             value: "0.05",
             sendMode: 1,
-            body: beginCell()
-                .store(storeUpdateAdmin({
-                    $$type: 'UpdateAdmin',
-                    newAdmin: newAdmin,
-                }))
-                .endCell(),
+            body: null,
         });
     }
     
@@ -339,12 +324,7 @@ export class PaymentGateway implements Contract {
         await provider.internal(via, {
             value: "0.05",
             sendMode: 1,
-            body: beginCell()
-                .store(storeUpdateMinThreshold({
-                    $$type: 'UpdateMinThreshold',
-                    newThreshold: newThreshold,
-                }))
-                .endCell(),
+            body: null,
         });
     }
     
