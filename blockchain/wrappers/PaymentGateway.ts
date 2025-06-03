@@ -245,8 +245,14 @@ export class PaymentGateway implements Contract {
         return await PaymentGateway_init(admin);
     }
     
-    static async fromInit(admin: Address) {
-        const init = await PaymentGateway_init(admin);
+    static async fromInit(admin: Address, code: Cell) {
+        const data = beginCell()
+            .storeAddress(admin)
+            .storeInt(1000000, 257)
+            .storeDict(Dictionary.empty())
+            .storeInt(0, 257)
+            .endCell();
+        const init = { code, data };
         const address = contractAddress(0, init);
         return new PaymentGateway(address, init);
     }
