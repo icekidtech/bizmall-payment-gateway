@@ -27,7 +27,7 @@ describe('PaymentGateway', () => {
         deployer = await blockchain.treasury('deployer');
 
         paymentGateway = await blockchain.openContract(
-            await PaymentGateway.fromInit(admin.address)
+            PaymentGateway.createFromConfig({ admin: admin.address }, code)
         );
 
         const deployResult = await paymentGateway.sendDeploy(
