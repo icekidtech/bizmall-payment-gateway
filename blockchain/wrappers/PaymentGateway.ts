@@ -361,9 +361,9 @@ export class PaymentGateway implements Contract {
     static createFromConfig(config: { admin: Address }, code: Cell, workchain = 0) {
         const data = beginCell()
             .storeAddress(config.admin)
-            .storeUint(1000000, 32) // minThreshold
+            .storeInt(1000000, 257) // minThreshold as int257
             .storeDict(Dictionary.empty()) // orders
-            .storeUint(0, 32) // nextOrderId
+            .storeInt(0, 257) // nextOrderId as int257
             .endCell();
         const init = { code, data };
         return new PaymentGateway(contractAddress(workchain, init), init);
