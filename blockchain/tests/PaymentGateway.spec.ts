@@ -7,9 +7,9 @@ import { compile } from '@ton/blueprint';
 describe('PaymentGateway', () => {
     let code: Cell;
 
-    //beforeAll(async () => {
-    //    code = await compile('PaymentGateway');
-    //});
+    beforeAll(async () => {
+        code = await compile('PaymentGateway');
+    });
 
     let blockchain: Blockchain;
     let deployer: SandboxContract<TreasuryContract>;
