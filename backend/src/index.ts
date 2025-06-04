@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import authRoutes from './routes/authRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,9 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
