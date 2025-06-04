@@ -10,7 +10,7 @@ export const generateToken = (user: IUser): string => {
   return jwt.sign(
     payload,
     process.env.JWT_SECRET as string,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    { expiresIn: '1h' }
   );
 };
 
