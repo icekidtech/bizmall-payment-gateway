@@ -2,6 +2,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import app from '../src/index';
 import User from '../src/models/User';
+import { beforeAll, afterAll, describe, test, expect } from '@jest/globals';
 
 beforeAll(async () => {
   // Connect to a test database

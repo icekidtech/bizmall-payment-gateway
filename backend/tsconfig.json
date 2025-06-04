@@ -10,6 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "tests/test-mongo.ts"],
+  "include": ["src/**/*", "src/test-mongo.ts"],
   "exclude": ["node_modules", "dist", "tests"]
 }

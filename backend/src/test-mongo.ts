@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Order from '../src/models/Order';
-import Transaction from '../src/models/Transaction';
-import User from '../src/models/User';
+import Order from './models/Order';
+import Transaction from './models/Transaction';
+import User from './models/User';
 
 // Load environment variables
 dotenv.config();
