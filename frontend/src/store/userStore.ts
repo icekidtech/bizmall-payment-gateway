@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type UserType = 'admin' | 'merchant' | 'shopper' | null;
+type UserType = 'admin'
 
 interface UserState {
   userType: UserType;
