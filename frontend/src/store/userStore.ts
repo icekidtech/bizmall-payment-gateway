@@ -7,8 +7,8 @@ interface UserState {
   walletAddress: string | null;
   token: string | null;
   setUserType: (userType: UserType) => void;
-  setWalletAddress: (walletAddress: string | null) => void;
-  setToken: (token: string | null) => void;
+  setWalletAddress: (walletAddress: string) => void;
+  setToken: (token: string) => void;
   clearUser: () => void;
 }
 
