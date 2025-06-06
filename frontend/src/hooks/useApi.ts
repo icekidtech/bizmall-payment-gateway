@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { useUserStore } from '../store/userStore';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -35,33 +36,48 @@ export function useApi<T>(endpoint: string): ApiResponse<T> {
   return { data, loading, error };
 }
 
-export function useApiCall() {
-  const [data, setData] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+interface ApiOptions extends Omit<AxiosRequestConfig, 'url'> {}
 
-  const callApi = async (endpoint: string, method: 'GET' | 'POST' = 'GET', payload?: any) => {
+export const useApiCall = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const token = useUserStore((state) => state.token);
+  
+  const callApi = async (endpoint: string, options: ApiOptions = {}) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      let response;
+      const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
       
-      if (method === 'GET') {
-        response = await axios.get(`${API_BASE_URL}${endpoint}`);
-      } else {
-        response = await axios.post(`${API_BASE_URL}${endpoint}`, payload);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
+      
+      // Add auth token if available
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
       
-      setData(response.data);
-      setError(null);
+      const response = await axios({
+        url,
+        ...options,
+        headers
+      });
+      
       return response.data;
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-      setData(null);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(new Error('An unknown error occurred'));
+      }
       throw err;
     } finally {
       setLoading(false);
     }
   };
-
-  return { data, loading, error, callApi };
-}
+  
+  return { loading, error, callApi };
+};
