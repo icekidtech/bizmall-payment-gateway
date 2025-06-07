@@ -5,47 +5,46 @@ const WalletConnectButton = () => {
   const [connecting, setConnecting] = useState(false);
   const { walletAddress, setWalletAddress } = useUserStore();
 
-  const handleConnect = async () => {
+  const handleConnectWallet = () => {
     setConnecting(true);
-    try {
-      // This is a placeholder - actual TON Connect implementation will be added later
-      setTimeout(() => {
-        const mockWalletAddress = 'UQBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxJ7';
-        setWalletAddress(mockWalletAddress);
-        setConnecting(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error connecting wallet:', error);
+
+    // In a real implementation, this would use @tonconnect/ui-react
+    // For now, we'll simulate with a mock wallet address
+    setTimeout(() => {
+      const mockAddress = 'EQAvDfWFG0oYX19jwNDNBBL1rKNT9XfaGP9HyTb5nb2Eml6y';
+      setWalletAddress(mockAddress);
       setConnecting(false);
-    }
+    }, 1000);
   };
 
-  const handleDisconnect = () => {
+  const handleDisconnectWallet = () => {
     setWalletAddress(null);
   };
 
-  return (
-    <div>
-      {walletAddress ? (
-        <div className="flex items-center">
-          <span className="mr-2 text-sm truncate max-w-[120px]">{walletAddress}</span>
-          <button
-            onClick={handleDisconnect}
-            className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
-          >
-            Disconnect
-          </button>
-        </div>
-      ) : (
+  if (walletAddress) {
+    return (
+      <div className="flex items-center">
+        <span className="font-mono text-xs text-gray-600 mr-2">
+          {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+        </span>
         <button
-          onClick={handleConnect}
-          disabled={connecting}
-          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 disabled:bg-blue-400"
+          onClick={handleDisconnectWallet}
+          className="text-gray-600 hover:text-gray-800 text-sm font-medium"
         >
-          {connecting ? 'Connecting...' : 'Connect Wallet'}
+          Disconnect
         </button>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleConnectWallet}
+      disabled={connecting}
+      className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-2 rounded-md text-sm font-medium"
+    >
+      {connecting ? 'Connecting...' : 'Connect Wallet'}
+    </button>
   );
 };
 
