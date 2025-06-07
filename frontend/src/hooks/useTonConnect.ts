@@ -29,7 +29,7 @@ export const useTonConnect = () => {
   
   const disconnect = () => {
     // In a real implementation, this would disconnect from TON Connect
-    setWalletAddress(null);
+    setWalletAddress('');
     setConnected(false);
   };
   
