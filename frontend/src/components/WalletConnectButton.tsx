@@ -18,7 +18,7 @@ const WalletConnectButton = () => {
   };
 
   const handleDisconnectWallet = () => {
-    setWalletAddress(null);
+    setWalletAddress('');
   };
 
   if (walletAddress) {
