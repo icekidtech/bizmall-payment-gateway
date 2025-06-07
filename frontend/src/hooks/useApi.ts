@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import { useUserStore } from '../store/userStore';
 
 const API_BASE_URL = 'http://localhost:3000';
