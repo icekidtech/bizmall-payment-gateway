@@ -46,6 +46,46 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// Add this signup function
+export const signup = async (req: Request, res: Response) => {
+  try {
+    const { email, password, userType } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ userId: email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    
+    // Create new user
+    const user = await User.create({
+      userId: email, // Using email as userId for now
+      userType: userType || 'shopper',
+      // Note: In production, you should hash passwords
+      // For now, we're keeping it simple since this is a wallet-based system
+    });
+    
+    // Generate JWT token
+    const token = generateToken(user);
+    
+    return res.status(201).json({
+      message: 'User created successfully',
+      token,
+      user: {
+        userId: user.userId,
+        userType: user.userType
+      }
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    return res.status(500).json({ message: 'Registration failed' });
+  }
+};
+
 export const getProfile = async (req: Request, res: Response) => {
   try {
     if (!req.user) {

@@ -82,26 +82,20 @@ export type Order = {
     $$type: 'Order';
     amount: bigint;
     buyer: Address;
-    sellerType: bigint;
-    sellerWallet: Address;
     status: bigint;
     timestamp: bigint;
 }
 
 export type ProcessPayment = {
     $$type: 'ProcessPayment';
-    orderId: bigint;
-    sellerType: bigint;
-    sellerWallet: Address;
+    orderId: bigint; // Keep orderId to link with off-chain records
 }
 
 export function storeProcessPayment(src: ProcessPayment) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(1684571233, 32);
-        b_0.storeUint(src.orderId, 32);
-        b_0.storeUint(src.sellerType, 8);
-        b_0.storeAddress(src.sellerWallet);
+        b_0.storeUint(1684571233, 32); // Op-code for ProcessPayment
+        b_0.storeUint(src.orderId, 64); // Store orderId (e.g., 64-bit, adjust if Tact uses different size)
     };
 }
 
@@ -211,11 +205,11 @@ const PaymentGateway_types: ABIType[] = [
     {"name":"Deploy","header":2490013878,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"DeployOk","header":2952335191,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"FactoryDeploy","header":1829761339,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cashback","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"Order","header":null,"fields":[{"name":"amount","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"buyer","type":{"kind":"simple","type":"address","optional":false}},{"name":"sellerType","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"sellerWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"status","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"timestamp","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
+    {"name":"Order","header":null,"fields":[{"name":"amount","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"buyer","type":{"kind":"simple","type":"address","optional":false}},{"name":"status","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"timestamp","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"PaymentReceived","header":null,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"amount","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"buyer","type":{"kind":"simple","type":"address","optional":false}},{"name":"sellerWallet","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"OrderConfirmed","header":null,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"OrderRefunded","header":null,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
-    {"name":"ProcessPayment","header":1684571233,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"sellerType","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"sellerWallet","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"ProcessPayment","header":1684571233,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"ConfirmOrder","header":2389423884,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"ProcessRefund","header":1957094775,"fields":[{"name":"orderId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"UpdateAdmin","header":367635210,"fields":[{"name":"newAdmin","type":{"kind":"simple","type":"address","optional":false}}]},
@@ -245,12 +239,13 @@ export class PaymentGateway implements Contract {
         return await PaymentGateway_init(admin);
     }
     
-    static async fromInit(admin: Address, code: Cell) {
+    static async fromInit(admin: Address, bizmallWallet: Address, code: Cell) { // Added bizmallWallet
         const data = beginCell()
             .storeAddress(admin)
-            .storeInt(1000000, 257)
-            .storeDict(Dictionary.empty())
-            .storeInt(0, 257)
+            .storeAddress(bizmallWallet) // Store BizMall's wallet address
+            .storeInt(1000000, 257) // minThreshold (assuming this is still relevant or a placeholder)
+            .storeDict(Dictionary.empty()) // orders
+            .storeInt(0, 257) // nextOrderId
             .endCell();
         const init = { code, data };
         const address = contractAddress(0, init);
@@ -284,19 +279,15 @@ export class PaymentGateway implements Contract {
     }
     
     async sendProcessPayment(provider: ContractProvider, via: Sender, opts: {
-        orderId: number;
-        sellerType: number;
-        sellerWallet: Address;
-    }, value: bigint) {
+        orderId: bigint; // Changed from number to bigint
+    }, value: bigint) { // Value is the payment amount
         await provider.internal(via, {
             value,
             sendMode: 1,
             body: beginCell()
                 .store(storeProcessPayment({
                     $$type: 'ProcessPayment',
-                    orderId: BigInt(opts.orderId),
-                    sellerType: BigInt(opts.sellerType),
-                    sellerWallet: opts.sellerWallet,
+                    orderId: opts.orderId,
                 }))
                 .endCell(),
         });
@@ -334,9 +325,9 @@ export class PaymentGateway implements Contract {
         });
     }
     
-    async getGetOrder(provider: ContractProvider, orderId: number): Promise<Order | null> {
+    async getGetOrder(provider: ContractProvider, orderId: bigint): Promise<Order | null> { // Changed orderId to bigint
         let builder = new TupleBuilder();
-        builder.writeNumber(BigInt(orderId));
+        builder.writeNumber(orderId); // Use writeNumber for bigint if your TupleBuilder supports it, or convert as needed
         let source = (await provider.get('getOrder', builder.build())).stack;
         const result = source.readCellOpt();
         if (result === null) { return null; }
@@ -364,9 +355,10 @@ export class PaymentGateway implements Contract {
         return result;
     }
     
-    static createFromConfig(config: { admin: Address }, code: Cell, workchain = 0) {
+    static createFromConfig(config: { admin: Address, bizmallWallet: Address }, code: Cell, workchain = 0) { // Added bizmallWallet
         const data = beginCell()
             .storeAddress(config.admin)
+            .storeAddress(config.bizmallWallet) // Store BizMall's wallet address
             .storeInt(1000000, 257) // minThreshold as int257
             .storeDict(Dictionary.empty()) // orders
             .storeInt(0, 257) // nextOrderId as int257
@@ -380,17 +372,13 @@ function loadOrder(slice: Slice): Order {
     let sc_0 = slice;
     let _amount = sc_0.loadIntBig(257);
     let _buyer = sc_0.loadAddress();
-    let _sellerType = sc_0.loadIntBig(257);
-    let _sellerWallet = sc_0.loadAddress();
     let _status = sc_0.loadIntBig(257);
     let _timestamp = sc_0.loadIntBig(257);
-    return { 
-        $$type: 'Order' as const, 
-        amount: _amount, 
-        buyer: _buyer, 
-        sellerType: _sellerType, 
-        sellerWallet: _sellerWallet, 
-        status: _status, 
-        timestamp: _timestamp 
+    return {
+        $$type: 'Order' as const,
+        amount: _amount,
+        buyer: _buyer,
+        status: _status,
+        timestamp: _timestamp
     };
 }

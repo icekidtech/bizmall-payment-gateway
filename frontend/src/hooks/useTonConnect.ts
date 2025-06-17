@@ -1,42 +1,71 @@
 import { useState, useEffect } from 'react';
-import { useUserStore } from '../store/userStore';
+import { TonConnectUI } from '@tonconnect/ui-react';
 
-export const useTonConnect = () => {
-  const [connected, setConnected] = useState(false);
-  const { walletAddress, setWalletAddress } = useUserStore();
-  
-  // In a real implementation, this would use @tonconnect/ui-react
-  // For demonstration, we'll use a simpler implementation
-  
-  useEffect(() => {
-    // Check if wallet is already connected
-    setConnected(!!walletAddress);
-  }, [walletAddress]);
-  
-  const connect = async () => {
+let tonConnectUIInstance: TonConnectUI | null = null;
+
+// Create singleton instance to avoid multiple initializations
+const getTonConnectUI = (): TonConnectUI => {
+  if (!tonConnectUIInstance) {
     try {
-      // In a real implementation, this would open TON Connect modal
-      // For now, simulate with a mock address
-      const mockAddress = 'EQAvDfWFG0oYX19jwNDNBBL1rKNT9XfaGP9HyTb5nb2Eml6y';
-      setWalletAddress(mockAddress);
-      setConnected(true);
-      return mockAddress;
+      tonConnectUIInstance = new TonConnectUI({
+        manifestUrl: '/ton-connect-manifest.json',
+      });
+    } catch (error) {
+      console.error('Failed to initialize TonConnectUI:', error);
+    }
+  }
+  return tonConnectUIInstance as TonConnectUI;
+};
+
+export const useTonWallet = () => {
+  const [wallet, setWallet] = useState<any>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    try {
+      const tonConnect = getTonConnectUI();
+      const unsubscribe = tonConnect.onStatusChange((wallet) => {
+        if (wallet) {
+          setWallet(wallet);
+          setAddress(wallet.account.address);
+          setConnected(true);
+        } else {
+          setWallet(null);
+          setAddress(null);
+          setConnected(false);
+        }
+        setConnecting(false);
+      });
+      
+      return () => {
+        unsubscribe();
+      };
+    } catch (error) {
+      console.error('Error in wallet hook:', error);
+    }
+  }, []);
+
+  const connectWallet = async () => {
+    setConnecting(true);
+    try {
+      const tonConnect = getTonConnectUI();
+      await tonConnect.openModal();
     } catch (err) {
       console.error('Failed to connect wallet:', err);
-      return null;
+      setConnecting(false);
     }
   };
-  
-  const disconnect = () => {
-    // In a real implementation, this would disconnect from TON Connect
-    setWalletAddress('');
-    setConnected(false);
+
+  const disconnectWallet = async () => {
+    try {
+      const tonConnect = getTonConnectUI();
+      await tonConnect.disconnect();
+    } catch (err) {
+      console.error('Failed to disconnect wallet:', err);
+    }
   };
-  
-  return {
-    connected,
-    walletAddress,
-    connect,
-    disconnect
-  };
+
+  return { wallet, address, connected, connecting, connectWallet, disconnectWallet };
 };

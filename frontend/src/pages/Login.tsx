@@ -18,14 +18,15 @@ const Login = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
-        email,
-        password
+      // Use relative URL - proxy will handle the routing
+      const response = await axios.post('/api/auth/login', {
+        userId: email, // Using email as userId
+        walletAddress: 'temp-wallet-address' // Temporary - will be replaced with actual wallet
       });
       
-      const { token, userType } = response.data;
+      const { token, user } = response.data;
       setToken(token);
-      setUserType(userType);
+      setUserType(user.userType);
       navigate('/dashboard');
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -42,12 +43,12 @@ const Login = () => {
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Log In</h2>
       
-      {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
+      {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">Error: {error}</div>}
       
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="email">
-            Email
+            Email Address
           </label>
           <input
             id="email"
@@ -78,9 +79,13 @@ const Login = () => {
           className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
           disabled={loading}
         >
-          {loading ? 'Logging In...' : 'Log In'}
+          {loading ? 'Logging In...' : 'Login'}
         </button>
       </form>
+      
+      <p className="mt-4 text-center">
+        Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign up</a>
+      </p>
     </div>
   );
 };

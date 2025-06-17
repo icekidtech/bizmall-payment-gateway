@@ -3,7 +3,8 @@ import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 import { useUserStore } from '../store/userStore';
 
-const API_BASE_URL = 'http://localhost:3000';
+// Use relative URLs since we have a proxy
+const API_BASE_URL = '';
 
 interface ApiOptions extends Omit<AxiosRequestConfig, 'url'> {}
 
@@ -31,18 +32,15 @@ export const useApiCall = () => {
       
       const response = await axios({
         url,
+        headers,
         ...options,
-        headers
       });
       
       return response.data;
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(new Error('An unknown error occurred'));
-      }
-      throw err;
+      const errorObj = err instanceof Error ? err : new Error('API call failed');
+      setError(errorObj);
+      throw errorObj;
     } finally {
       setLoading(false);
     }

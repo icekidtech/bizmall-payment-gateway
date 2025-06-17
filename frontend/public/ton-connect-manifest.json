@@ -1,0 +1,7 @@
+{
+  "url": "https://bizmall-payment.example.com",
+  "name": "BizMall Payment Gateway",
+  "iconUrl": "https://bizmall-payment.example.com/favicon.ico",
+  "termsOfUseUrl": "https://bizmall-payment.example.com/terms",
+  "privacyPolicyUrl": "https://bizmall-payment.example.com/privacy"
+}
