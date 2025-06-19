@@ -2,7 +2,17 @@ import { useTonWallet } from '../hooks/useTonConnect';
 import { TonConnectButton } from '@tonconnect/ui-react';
 
 const WalletConnectButton = () => {
-  const { address, connected } = useTonWallet();
+  const { address, connected, connecting } = useTonWallet();
+
+  if (connecting) {
+    return (
+      <div className="flex items-center">
+        <button disabled className="bg-gray-400 text-white font-medium px-4 py-2 rounded-lg">
+          Connecting...
+        </button>
+      </div>
+    );
+  }
 
   if (connected && address) {
     return (
