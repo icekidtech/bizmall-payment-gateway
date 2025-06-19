@@ -6,15 +6,13 @@ let tonConnectUIInstance: TonConnectUI | null = null;
 // Create singleton instance to avoid multiple initializations
 const getTonConnectUI = (): TonConnectUI => {
   if (!tonConnectUIInstance) {
-    try {
-      tonConnectUIInstance = new TonConnectUI({
-        manifestUrl: '/ton-connect-manifest.json',
-      });
-    } catch (error) {
-      console.error('Failed to initialize TonConnectUI:', error);
-    }
+    tonConnectUIInstance = new TonConnectUI({
+      manifestUrl: 'http://localhost:5173/ton-connect-manifest.json',
+      //retryLimit: 5, // Add retry attempts
+      //connectRequestTimeout: 120_000 // Increase timeout
+    });
   }
-  return tonConnectUIInstance as TonConnectUI;
+  return tonConnectUIInstance;
 };
 
 export const useTonWallet = () => {
@@ -24,27 +22,36 @@ export const useTonWallet = () => {
   const [connecting, setConnecting] = useState(false);
 
   useEffect(() => {
-    try {
-      const tonConnect = getTonConnectUI();
-      const unsubscribe = tonConnect.onStatusChange((wallet) => {
-        if (wallet) {
-          setWallet(wallet);
-          setAddress(wallet.account.address);
-          setConnected(true);
-        } else {
-          setWallet(null);
-          setAddress(null);
-          setConnected(false);
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    const initWallet = async () => {
+      try {
+        const tonConnect = getTonConnectUI();
+        const unsubscribe = tonConnect.onStatusChange((wallet) => {
+          if (wallet) {
+            setWallet(wallet);
+            setAddress(wallet.account.address);
+            setConnected(true);
+          } else {
+            setWallet(null);
+            setAddress(null);
+            setConnected(false);
+          }
+          setConnecting(false);
+        });
+
+        return unsubscribe;
+      } catch (error) {
+        console.error('Wallet initialization error:', error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          setTimeout(initWallet, 1000 * retryCount);
         }
-        setConnecting(false);
-      });
-      
-      return () => {
-        unsubscribe();
-      };
-    } catch (error) {
-      console.error('Error in wallet hook:', error);
-    }
+      }
+    };
+
+    initWallet();
   }, []);
 
   const connectWallet = async () => {

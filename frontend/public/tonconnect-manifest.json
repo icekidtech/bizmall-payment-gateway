@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:5173",
+  "name": "BizMall Payment Gateway",
+  "iconUrl": "http://localhost:5173/ton-logo.png",
+  "termsOfUseUrl": "http://localhost:5173/terms",
+  "privacyPolicyUrl": "http://localhost:5173/privacy"
+}
