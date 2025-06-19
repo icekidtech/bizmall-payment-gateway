@@ -3,5 +3,10 @@
   "name": "BizMall Payment Gateway",
   "iconUrl": "http://localhost:5173/ton-logo.png",
   "termsOfUseUrl": "http://localhost:5173/terms",
-  "privacyPolicyUrl": "http://localhost:5173/privacy"
+  "privacyPolicyUrl": "http://localhost:5173/privacy",
+  "manifestVersion": "0.3",
+  "capabilities": [
+    "ton_addr",
+    "ton_send"
+  ]
 }
